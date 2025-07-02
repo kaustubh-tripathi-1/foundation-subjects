@@ -1365,17 +1365,28 @@ app.listen(3000);
     -   Case-insensitive keys; values vary (e.g., strings, URIs, numbers).
     -   Defined in RFC 7231 and related standards; CORS headers in Fetch API spec.
 -   **Example**:
+
     -   Request to create a snippet in your ByteTogether editor:
+
+        ```http
         POST /snippets HTTP/1.1
         Host: api.your-editor.com
         Content-Type: application/json
         Authorization: Bearer YOUR_TOKEN
+
         {"code": "console.log(\"Hello\")"}
+        ```
+
     -   Response:
+
+        ```http
         HTTP/1.1 201 Created
         Content-Type: application/json
         Location: https://api.your-editor.com/snippets/123
+
         {"id": 123, "code": "console.log(\"Hello\")"}
+        ```
+
 -   **Developer Relevance**: Headers are essential for building and debugging APIs (e.g., your ByteTogether editor), handling CORS for cross-domain requests, and optimizing performance (e.g., caching).
 
 ### Major HTTP Request Headers
@@ -1387,7 +1398,9 @@ app.listen(3000);
     -   **Description**: Specifies the domain name (and optionally port) of the server (required in HTTP/1.1).
     -   **Use Case**: Directs request to the correct virtual host on a server (e.g., `api.github.com`).
     -   **Example**:
+        ```http
         Host: api.your-editor.com
+        ```
     -   **Real-World Example**: Ensures your POST to `api.your-editor.com` reaches your editor’s API, not another service on the same server.
     -   **Developer Note**: Required for all HTTP/1.1 requests; critical for APIs.
 
@@ -1396,7 +1409,9 @@ app.listen(3000);
     -   **Description**: Identifies the client software (e.g., browser, `curl`) and its version.
     -   **Use Case**: Servers use it for analytics or compatibility (e.g., serving mobile-friendly content).
     -   **Example**:
+        ```http
         User-Agent: curl/8.0.1
+        ```
     -   **Real-World Example**: Identifies your ByteTogether app’s client when fetching snippets.
     -   **Developer Note**: Useful for debugging client-specific issues; avoid spoofing unless testing.
 
@@ -1405,7 +1420,9 @@ app.listen(3000);
     -   **Description**: Specifies media types (MIME types) the client accepts (e.g., `application/json`).
     -   **Use Case**: Requests specific response formats from APIs.
     -   **Example**:
+        ```http
         Accept: application/json, text/html
+        ```
     -   **Real-World Example**: Your editor requesting JSON snippets: `Accept: application/json`.
     -   **Developer Note**: Handle `406 Not Acceptable` if the server can’t provide the requested type.
 
@@ -1414,7 +1431,9 @@ app.listen(3000);
     -   **Description**: Specifies the media type of the request body (e.g., for POST, PUT).
     -   **Use Case**: Tells the server how to parse the body (e.g., JSON, form data).
     -   **Example**:
+        ```http
         Content-Type: application/json
+        ```
     -   **Real-World Example**: Sending a snippet to `https://api.your-editor.com/snippets` with JSON data.
     -   **Developer Note**: Must match the body format to avoid `415 Unsupported Media Type`.
 
@@ -1423,7 +1442,9 @@ app.listen(3000);
     -   **Description**: Specifies the size (in bytes) of the request body.
     -   **Use Case**: Helps servers process large POST/PUT requests.
     -   **Example**:
+        ```http
         Content-Length: 62
+        ```
     -   **Real-World Example**: Indicates the size of JSON data when saving a snippet.
     -   **Developer Note**: Automatically set by tools like `curl`; required for some servers.
 
@@ -1432,7 +1453,9 @@ app.listen(3000);
     -   **Description**: Provides credentials (e.g., Bearer token, Basic auth) to authenticate the client.
     -   **Use Case**: Access protected API endpoints (e.g., GitHub API).
     -   **Example**:
+        ```http
         Authorization: Bearer YOUR_TOKEN
+        ```
     -   **Real-World Example**: Authenticating a POST to `https://api.your-editor.com/snippets` for a logged-in user.
     -   **Developer Note**: Handle `401 Unauthorized` or `403 Forbidden` errors if invalid.
 
@@ -1441,7 +1464,9 @@ app.listen(3000);
     -   **Description**: Specifies compression formats the client supports (e.g., `gzip`, `deflate`).
     -   **Use Case**: Reduces response size for faster transfers.
     -   **Example**:
+        ```http
         Accept-Encoding: gzip, deflate
+        ```
     -   **Real-World Example**: Compressing API responses for your editor’s snippet list.
     -   **Developer Note**: Servers respond with `Content-Encoding` if compression is applied.
 
@@ -1450,7 +1475,9 @@ app.listen(3000);
     -   **Description**: Specifies an `ETag` to update a resource only if it matches the server’s version.
     -   **Use Case**: Prevents overwriting changes in concurrent updates (optimistic locking).
     -   **Example**:
+        ```http
         If-Match: "abc123"
+        ```
     -   **Real-World Example**: Updating a snippet in your editor only if unchanged.
     -   **Developer Note**: Handle `412 Precondition Failed` if the resource has changed.
 
@@ -1459,7 +1486,9 @@ app.listen(3000);
     -   **Description**: Specifies an `ETag` to return a resource only if it has changed.
     -   **Use Case**: Optimizes caching for GET requests.
     -   **Example**:
+        ```http
         If-None-Match: "abc123"
+        ```
     -   **Real-World Example**: Checking if a snippet has updated in your editor.
     -   **Developer Note**: Returns `304 Not Modified` if unchanged.
 
@@ -1468,7 +1497,9 @@ app.listen(3000);
     -   **Description**: Requests a resource only if modified since a given date.
     -   **Use Case**: Caching static assets or API data.
     -   **Example**:
+        ```http
         If-Modified-Since: Wed, 29 Jun 2025 07:00:00 GMT
+        ```
     -   **Real-World Example**: Fetching updated snippets from your editor’s API.
     -   **Developer Note**: Pairs with `Last-Modified` response header; returns `304` if unchanged.
 
@@ -1477,7 +1508,9 @@ app.listen(3000);
     -   **Description**: Sends stored cookies to the server for session tracking.
     -   **Use Case**: Maintains user sessions (e.g., login state).
     -   **Example**:
+        ```http
         Cookie: session=abc123
+        ```
     -   **Real-World Example**: Keeping a user logged in to your ByteTogether editor.
     -   **Developer Note**: Set by server’s `Set-Cookie`; handle securely to avoid XSS.
 
@@ -1486,7 +1519,9 @@ app.listen(3000);
     -   **Description**: Specifies the client’s domain for cross-origin requests.
     -   **Use Case**: Used in CORS to indicate the request’s source (e.g., `https://your-editor.com`).
     -   **Example**:
+        ```http
         Origin: https://your-editor.com
+        ```
     -   **Real-World Example**: Your editor’s frontend making API calls to `api.your-editor.com`.
     -   **Developer Note**: Triggers CORS preflight requests; server responds with CORS headers.
 
@@ -1495,15 +1530,19 @@ app.listen(3000);
     -   **Description**: Specifies the method for a CORS preflight request (e.g., POST).
     -   **Use Case**: Sent in `OPTIONS` requests to check if a method is allowed cross-origin.
     -   **Example**:
+        ```http
         Access-Control-Request-Method: POST
+        ```
     -   **Real-World Example**: Checking if your editor’s frontend can POST to `api.your-editor.com`.
-    -   **Developer Note**: Part of CORS preflight; server respondsWITH `Access-Control-Allow-Methods`.
+    -   **Developer Note**: Part of CORS preflight; server responds with `Access-Control-Allow-Methods`.
 
 -   **Access-Control-Request-Headers** (CORS):
     -   **Description**: Lists headers the client wants to use in a CORS request.
     -   **Use Case**: Sent in `OPTIONS` requests to verify allowed headers.
     -   **Example**:
+        ```http
         Access-Control-Request-Headers: Authorization, Content-Type
+        ```
     -   **Real-World Example**: Ensuring your editor’s API accepts custom headers.
     -   **Developer Note**: Server responds with `Access-Control-Allow-Headers`.
 
@@ -1516,7 +1555,9 @@ app.listen(3000);
     -   **Description**: Specifies the media type of the response body (e.g., `application/json`).
     -   **Use Case**: Tells clients how to parse the response (e.g., JSON, HTML).
     -   **Example**:
+        ```http
         Content-Type: application/json
+        ```
     -   **Real-World Example**: Returning a snippet’s JSON from `https://api.your-editor.com/snippets/123`.
     -   **Developer Note**: Clients use this to process data; mismatch causes errors.
 
@@ -1525,7 +1566,9 @@ app.listen(3000);
     -   **Description**: Specifies the size (in bytes) of the response body.
     -   **Use Case**: Helps clients handle large responses (e.g., file downloads).
     -   **Example**:
+        ```http
         Content-Length: 100
+        ```
     -   **Real-World Example**: Indicates size of a snippet’s JSON response.
     -   **Developer Note**: Optional for chunked transfers (HTTP/1.1).
 
@@ -1534,7 +1577,9 @@ app.listen(3000);
     -   **Description**: Specifies the URI of a new or redirected resource.
     -   **Use Case**: Used in `201 Created` or `3xx` redirects.
     -   **Example**:
+        ```http
         Location: https://api.your-editor.com/snippets/123
+        ```
     -   **Real-World Example**: Redirecting after creating a snippet in your editor.
     -   **Developer Note**: Follow with `curl -L` or handle in app logic.
 
@@ -1543,7 +1588,9 @@ app.listen(3000);
     -   **Description**: Sends cookies to the client for session tracking.
     -   **Use Case**: Maintains user sessions or authentication.
     -   **Example**:
+        ```http
         Set-Cookie: session=abc123; HttpOnly; Secure
+        ```
     -   **Real-World Example**: Setting a session for a logged-in user in your editor.
     -   **Developer Note**: Use `HttpOnly` and `Secure` flags for security.
 
@@ -1552,7 +1599,9 @@ app.listen(3000);
     -   **Description**: Provides a unique identifier for a resource’s version.
     -   **Use Case**: Enables caching and conditional requests (e.g., `If-Match`).
     -   **Example**:
+        ```http
         ETag: "abc123"
+        ```
     -   **Real-World Example**: Tracking snippet versions in your editor’s API.
     -   **Developer Note**: Use with `If-Match` or `If-None-Match` for concurrency.
 
@@ -1561,7 +1610,9 @@ app.listen(3000);
     -   **Description**: Indicates when a resource was last modified.
     -   **Use Case**: Supports caching with `If-Modified-Since`.
     -   **Example**:
+        ```http
         Last-Modified: Wed, 29 Jun 2025 07:00:00 GMT
+        ```
     -   **Real-World Example**: Checking if a snippet has updated in your editor.
     -   **Developer Note**: Returns `304 Not Modified` if unchanged.
 
@@ -1570,7 +1621,9 @@ app.listen(3000);
     -   **Description**: Specifies caching behavior (e.g., `max-age`, `no-cache`).
     -   **Use Case**: Controls how clients and proxies cache responses.
     -   **Example**:
+        ```http
         Cache-Control: max-age=3600
+        ```
     -   **Real-World Example**: Caching static assets like your editor’s logo.
     -   **Developer Note**: Optimize performance; use `no-cache` for dynamic data.
 
@@ -1579,7 +1632,9 @@ app.listen(3000);
     -   **Description**: Specifies compression applied to the response (e.g., `gzip`).
     -   **Use Case**: Reduces response size for faster transfers.
     -   **Example**:
+        ```http
         Content-Encoding: gzip
+        ```
     -   **Real-World Example**: Compressing API responses for your editor’s snippets.
     -   **Developer Note**: Pairs with `Accept-Encoding` request header.
 
@@ -1588,7 +1643,9 @@ app.listen(3000);
     -   **Description**: Specifies which origins are allowed to access the resource.
     -   **Use Case**: Enables cross-origin requests (e.g., from `https://your-editor.com` to `api.your-editor.com`).
     -   **Example**:
+        ```http
         Access-Control-Allow-Origin: https://your-editor.com
+        ```
     -   **Real-World Example**: Allowing your editor’s frontend to access its API.
     -   **Developer Note**: Use `*` for public APIs; specific origins for security.
 
@@ -1597,7 +1654,9 @@ app.listen(3000);
     -   **Description**: Lists allowed HTTP methods for cross-origin requests.
     -   **Use Case**: Responds to `OPTIONS` preflight requests.
     -   **Example**:
+        ```http
         Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+        ```
     -   **Real-World Example**: Specifying methods for your editor’s API.
     -   **Developer Note**: Ensure all required methods are listed.
 
@@ -1606,7 +1665,9 @@ app.listen(3000);
     -   **Description**: Lists allowed headers for cross-origin requests.
     -   **Use Case**: Responds to `Access-Control-Request-Headers` in preflight.
     -   **Example**:
+        ```http
         Access-Control-Allow-Headers: Authorization, Content-Type
+        ```
     -   **Real-World Example**: Allowing custom headers in your editor’s API.
     -   **Developer Note**: Match client’s requested headers.
 
@@ -1615,7 +1676,9 @@ app.listen(3000);
     -   **Description**: Indicates whether credentials (e.g., cookies) are allowed in cross-origin requests.
     -   **Use Case**: Enables authenticated API calls across domains.
     -   **Example**:
+        ```http
         Access-Control-Allow-Credentials: true
+        ```
     -   **Real-World Example**: Allowing session cookies for your editor’s API.
     -   **Developer Note**: Requires specific `Access-Control-Allow-Origin` (not `*`).
 
@@ -1624,7 +1687,9 @@ app.listen(3000);
     -   **Description**: Specifies how long (in seconds) preflight response can be cached.
     -   **Use Case**: Reduces preflight requests for performance.
     -   **Example**:
+        ```http
         Access-Control-Max-Age: 86400
+        ```
     -   **Real-World Example**: Caching CORS settings for your editor’s API.
     -   **Developer Note**: Set to balance performance and flexibility.
 
@@ -1632,7 +1697,9 @@ app.listen(3000);
     -   **Description**: Lists headers the client can access in a cross-origin response.
     -   **Use Case**: Exposes custom headers to frontend scripts.
     -   **Example**:
+        ```http
         Access-Control-Expose-Headers: X-Custom-Header
+        ```
     -   **Real-World Example**: Exposing a custom header in your editor’s API response.
     -   **Developer Note**: Use for non-standard headers.
 
@@ -1643,23 +1710,32 @@ app.listen(3000);
     -   Browsers send `Origin` in requests; servers respond with `Access-Control-*` headers.
     -   For non-simple requests (e.g., POST with JSON), browsers send `OPTIONS` preflight with `Access-Control-Request-*` headers.
     -   Example Preflight:
+        ```http
         OPTIONS /snippets HTTP/1.1
         Host: api.your-editor.com
         Origin: https://your-editor.com
         Access-Control-Request-Method: POST
         Access-Control-Request-Headers: Content-Type
+        ```
     -   Response:
+        ```http
         HTTP/1.1 200 OK
         Access-Control-Allow-Origin: https://your-editor.com
         Access-Control-Allow-Methods: POST
         Access-Control-Allow-Headers: Content-Type
+        ```
 -   **Developer Note**: Configure CORS on your server (e.g., Node.js with Express) to support your ByteTogether frontend:
+    ```js
     app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://your-editor.com');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
+        res.header("Access-Control-Allow-Origin", "https://your-editor.com");
+        res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+        res.header(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization"
+        );
+        next();
     });
+    ```
 
 ### Developer Relevance
 

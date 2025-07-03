@@ -13,12 +13,16 @@
     -   Defined in RFC 6265; used in web apps, APIs, and authentication.
 -   **Example**:
     -   Server sets a session cookie after login:
+        ```http
         HTTP/1.1 200 OK
         Set-Cookie: session=abc123; Path=/; HttpOnly; Secure
+        ```
     -   Client sends it back:
+        ```http
         GET /snippets HTTP/1.1
         Host: api.your-editor.com
         Cookie: session=abc123
+        ```
 -   **Real-World Example**: In your ByteTogether code editor, a cookie maintains a user’s login session to access protected API endpoints (e.g., `https://api.your-editor.com/snippets`).
 -   **Developer Relevance**: Cookies are critical for session management in your ByteTogether editor, enabling authenticated API calls and user personalization while requiring careful security handling.
 
@@ -27,13 +31,17 @@
 -   **Mechanism**:
     1. **Server Sets Cookie**: In a response, the server includes a `Set-Cookie` header with the cookie’s name, value, and attributes.
         - Example: After logging into `https://your-editor.com`, the server sets a session cookie:
-          Set-Cookie: session=abc123; Path=/; Secure
+            ```http
+            Set-Cookie: session=abc123; Path=/; Secure
+            ```
     2. **Client Stores Cookie**: The browser (or client) stores the cookie, associating it with the domain (e.g., `your-editor.com`).
     3. **Client Sends Cookie**: In subsequent requests to the same domain, the client includes the cookie in the `Cookie` header.
         - Example: Fetching snippets:
-          GET /snippets HTTP/1.1
-          Host: api.your-editor.com
-          Cookie: session=abc123
+            ```http
+            GET /snippets HTTP/1.1
+            Host: api.your-editor.com
+            Cookie: session=abc123
+            ```
     4. **Server Processes Cookie**: The server uses the cookie to identify the user or session (e.g., validate the session ID).
 -   **Stateless HTTP**: Cookies add state to HTTP, which is stateless by design, allowing servers to recognize returning clients.
 -   **Storage**:
@@ -44,8 +52,13 @@
 ### Cookie Structure and Attributes
 
 -   **Basic Format** (Set-Cookie header):
+
     -   `name=value; Attribute1; Attribute2`
-    -   Example: `Set-Cookie: session=abc123; Path=/; Domain=api.your-editor.com; Secure`
+    -   Example:
+        ```http
+        Set-Cookie: session=abc123; Path=/; Domain=api.your-editor.com; Secure
+        ```
+
 -   **Core Components**:
     -   **Name**: The cookie’s identifier (e.g., `session`).
     -   **Value**: The data (e.g., `abc123`, a session ID).
@@ -53,7 +66,8 @@
 -   **Common Attributes**:
 
     -   **Expires**: Sets the cookie’s expiration date (persistent cookie).
-        -   Example: `Expires=Wed, 02 Jul 2026 12:00:00 GMT`
+        -   Example:
+            `Expires=Wed, 02 Jul 2026 12:00:00 GMT`
         -   Without `Expires` or `Max-Age`, it’s a session cookie (deleted when browser closes).
     -   **Max-Age**: Specifies expiration in seconds (preferred over `Expires`).
         -   Example: `Max-Age=3600` (expires in 1 hour).
@@ -78,24 +92,33 @@
         -   Real-World Example: Prevents CSRF when your editor’s frontend calls `api.your-editor.com`.
 
 -   **Example Set-Cookie**:
+    ```http
     Set-Cookie: user=john; Max-Age=86400; Path=/; Domain=your-editor.com; Secure; HttpOnly; SameSite=Lax
+    ```
     -   Creates a cookie `user=john` valid for 1 day, site-wide, secure, and protected from JavaScript/CSRF.
 
 ### Cookies in HTTP Requests
 
 -   **Cookie Header**:
     -   Sent by the client with all cookies matching the request’s domain and path.
-    -   Format: `Cookie: name1=value1; name2=value2`
+    -   Format:
+        ```http
+        Cookie: name1=value1; name2=value2
+        ```
     -   Example:
+        ```http
         Cookie: session=abc123; theme=dark
+        ```
 -   **Automatic Handling**:
     -   Browsers automatically send matching cookies in requests.
     -   `curl` requires manual handling:
         curl -v --cookie "session=abc123" https://api.your-editor.com/snippets
 -   **Real-World Example**: Your ByteTogether editor sends a session cookie to authenticate API calls:
+    ```http
     GET /snippets/123 HTTP/1.1
     Host: api.your-editor.com
     Cookie: session=abc123
+    ```
 
 ### Cookies and CORS
 
@@ -105,22 +128,28 @@
         -   Server sets `Access-Control-Allow-Credentials: true`.
         -   `Access-Control-Allow-Origin` specifies a single origin (not `*`).
     -   Example CORS Request:
+        ```http
         POST /snippets HTTP/1.1
         Host: api.your-editor.com
         Origin: https://your-editor.com
         Cookie: session=abc123
+        ```
     -   Response:
+        ```http
         HTTP/1.1 201 Created
         Access-Control-Allow-Origin: https://your-editor.com
         Access-Control-Allow-Credentials: true
         Set-Cookie: session=abc123; Secure; HttpOnly
+        ```
 -   **Real-World Example**: Your editor’s frontend (`https://your-editor.com`) sends a cookie to `api.your-editor.com` for authenticated API calls, requiring CORS configuration.
 -   **Developer Note**: Configure your server (e.g., Express) for CORS with cookies:
+    ```js
     app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://your-editor.com');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
+        res.header("Access-Control-Allow-Origin", "https://your-editor.com");
+        res.header("Access-Control-Allow-Credentials", "true");
+        next();
     });
+    ```
 
 ### Types of Cookies
 
@@ -146,15 +175,20 @@
 -   **XSS (Cross-Site Scripting)**:
     -   Risk: Attackers steal cookies via JavaScript if not `HttpOnly`.
     -   Mitigation: Always use `HttpOnly` for session cookies.
-    -   Example: `Set-Cookie: session=abc123; HttpOnly`
+    -   Example:
+        ```http
+        Set-Cookie: session=abc123; HttpOnly
+        ```
 -   **CSRF (Cross-Site Request Forgery)**:
     -   Risk: Malicious sites send requests with your cookies.
     -   Mitigation: Use `SameSite=Strict` or `Lax`, and CSRF tokens.
     -   Example: Your editor requires a token in POST requests:
+        ```http
         POST /snippets HTTP/1.1
         Host: api.your-editor.com
         Cookie: session=abc123
         X-CSRF-Token: xyz789
+        ```
 -   **Man-in-the-Middle Attacks**:
     -   Risk: Cookies intercepted over HTTP.
     -   Mitigation: Use `Secure` attribute and HTTPS.
@@ -171,7 +205,9 @@
 -   **Browser Handling**:
     -   Browsers store cookies and send them automatically based on `Domain`, `Path`, and attributes.
     -   Access via `document.cookie` (non-`HttpOnly` cookies only):
+        ```js
         console.log(document.cookie); // "theme=dark"
+        ```
 -   **curl Handling**:
     -   Save cookies to a file:
         curl -v --cookie-jar cookies.txt https://api.your-editor.com/login
@@ -179,15 +215,23 @@
         curl -v --cookie cookies.txt https://api.your-editor.com/snippets
 -   **Node.js/Express**:
     -   Set cookies:
-        app.post('/login', (req, res) => {
-        res.cookie('session', 'abc123', { maxAge: 86400000, httpOnly: true, secure: true });
-        res.json({ message: 'Logged in' });
+        ```js
+        app.post("/login", (req, res) => {
+            res.cookie("session", "abc123", {
+                maxAge: 86400000,
+                httpOnly: true,
+                secure: true,
+            });
+            res.json({ message: "Logged in" });
         });
+        ```
     -   Read cookies:
-        app.get('/snippets', (req, res) => {
-        const session = req.cookies.session;
-        res.json({ snippets: [] });
+        ```js
+        app.get("/snippets", (req, res) => {
+            const session = req.cookies.session;
+            res.json({ snippets: [] });
         });
+        ```
 -   **Real-World Example**:
     -   GitHub API: Uses cookies for session management when accessing `https://github.com/login`.
     -   Your ByteTogether Editor: Sets a session cookie after login to access `https://api.your-editor.com/snippets`.
@@ -198,13 +242,20 @@
 -   **Security**: Implement `Secure`, `HttpOnly`, and `SameSite` to protect cookies in your editor’s API.
 -   **CORS**: Configure `Access-Control-Allow-Credentials` for cross-origin API calls with cookies.
 -   **Debugging**: Inspect cookies in browser DevTools (Network tab) or `curl -v`:
-    Example: curl -v --cookie "session=abc123" https://api.your-editor.com/snippets
+    Example:
+    ```bash
+    curl -v --cookie "session=abc123" https://api.your-editor.com/snippets
+    ```
 -   **Real-World Example**: After logging into your editor, a cookie authenticates POST requests to save snippets:
+
+    ```http
     POST /snippets HTTP/1.1
     Host: api.your-editor.com
     Cookie: session=abc123
     Content-Type: application/json
+
     {"code": "console.log(\"Hello\")"}
+    ```
 
 ### Notes for Your Learning
 
@@ -213,10 +264,16 @@
     -   Explore TCP (Layer 4) for reliable cookie delivery.
     -   Learn WebSockets for real-time features without cookies.
     -   Build a Node.js server with cookies:
-        app.post('/login', (req, res) => {
-        res.cookie('session', 'abc123', { maxAge: 86400000, httpOnly: true, secure: true });
-        res.json({ message: 'Logged in' });
+        ```js
+        app.post("/login", (req, res) => {
+            res.cookie("session", "abc123", {
+                maxAge: 86400000,
+                httpOnly: true,
+                secure: true,
+            });
+            res.json({ message: "Logged in" });
         });
+        ```
 -   **Practice**:
     -   Test cookies with `curl --cookie-jar` on `https://jsonplaceholder.typicode.com`.
     -   Set up a login endpoint in Express for your editor with cookies.

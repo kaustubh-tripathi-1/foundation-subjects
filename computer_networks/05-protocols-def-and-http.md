@@ -476,14 +476,25 @@ app.listen(3000);
     -   Operates over TCP (ports 443 for HTTPS, 465 for SMTPS, etc.).
     -   Successor to SSL; defined in RFC 5246 (TLS 1.2), RFC 8446 (TLS 1.3), and others.
 -   **Example**:
+
     -   HTTPS request to your ByteTogether editor:
+
+        ```http
         GET /snippets HTTP/1.1
         Host: api.your-editor.com
+
         (Encrypted via TLS, sent over TCP port 443)
+        ```
+
     -   Response:
+
+        ```http
         HTTP/1.1 200 OK
         Content-Type: application/json
+
         (Encrypted JSON data)
+        ```
+
 -   **Real-World Example**: Your ByteTogether editor’s API (`https://api.your-editor.com`) uses TLS to secure snippet data, ensuring users’ code isn’t intercepted.
 -   **Developer Relevance**: TLS is critical for securing your ByteTogether API, protecting user data, and complying with standards like GDPR.
 
@@ -667,17 +678,26 @@ app.listen(3000);
 -   **API Security**: Use TLS 1.3 for your ByteTogether API to secure snippet data and comply with standards.
 -   **Configuration**: Set up TLS with Let’s Encrypt for `api.your-editor.com`:
     Example (Node.js HTTPS server):
-    const https = require('https');
-    const fs = require('fs');
-    https.createServer({
-    key: fs.readFileSync('private.key'),
-    cert: fs.readFileSync('certificate.crt')
-    }, (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end('{"message": "Secure"}');
-    }).listen(443);
+    ```js
+    const https = require("https");
+    const fs = require("fs");
+    https
+        .createServer(
+            {
+                key: fs.readFileSync("private.key"),
+                cert: fs.readFileSync("certificate.crt"),
+            },
+            (req, res) => {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end('{"message": "Secure"}');
+            }
+        )
+        .listen(443);
+    ```
 -   **Debugging**: Inspect TLS with `openssl s_client`:
+    ```bash
     openssl s_client -connect api.your-editor.com:443
+    ```
 -   **CORS and TLS**: Your editor’s frontend uses HTTPS with `Access-Control-Allow-Origin` for secure API calls.
 -   **Real-World Example**: GitHub API (`https://api.github.com`) uses TLS 1.3 with ECDHE and AES-GCM.
 
